@@ -1,0 +1,43 @@
+{
+  // Stoffwerkstatt – GitHub Codespace
+  // Place this file at .devcontainer/devcontainer.json in the repo.
+  "name": "Stoffwerkstatt",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+
+  "features": {
+    // Node LTS (pinned; bump when a newer LTS is adopted)
+    "ghcr.io/devcontainers/features/node:1": { "version": "24" },
+    // GitHub CLI – Claude Code uses `gh` for issues and PRs
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    // Claude Code CLI
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
+  },
+
+  // Before Phase 0 there is no package.json yet, so install only if a lockfile exists.
+  // Playwright: Chromium only (enough for desktop + phone emulation), plus its system deps.
+  "postCreateCommand": "if [ -f package-lock.json ]; then npm ci && npx playwright install --with-deps chromium; else echo 'No package-lock.json yet - skipping install (Phase 0 will create it). Afterwards run: npm ci && npx playwright install --with-deps chromium'; fi",
+
+  // 5173 = Vite dev server, 4173 = Vite preview of the production build
+  "forwardPorts": [5173, 4173],
+  "portsAttributes": {
+    "5173": { "label": "Vite dev", "onAutoForward": "notify" },
+    "4173": { "label": "Vite preview", "onAutoForward": "silent" }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "vitest.explorer",
+        "ms-playwright.playwright"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": { "source.fixAll.eslint": "explicit" },
+        "typescript.tsdk": "node_modules/typescript/lib"
+      }
+    }
+  }
+}
